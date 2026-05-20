@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useDismissOnOutside } from '../../hooks/useDismissOnOutside'
 
 export interface MenuItem {
   label: string
@@ -20,22 +20,7 @@ const ITEM_HEIGHT = 32
 
 /** A positioned, dismissible popup list of actions. */
 export function MenuPopup({ items, x, y, onClose }: Props) {
-  useEffect(() => {
-    const close = () => onClose()
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose()
-    }
-    window.addEventListener('mousedown', close)
-    window.addEventListener('keydown', onKey)
-    window.addEventListener('resize', close)
-    window.addEventListener('scroll', close, true)
-    return () => {
-      window.removeEventListener('mousedown', close)
-      window.removeEventListener('keydown', onKey)
-      window.removeEventListener('resize', close)
-      window.removeEventListener('scroll', close, true)
-    }
-  }, [onClose])
+  useDismissOnOutside(true, onClose)
 
   const left = Math.max(8, Math.min(x, window.innerWidth - POP_WIDTH - 8))
   const height = items.length * ITEM_HEIGHT + 8

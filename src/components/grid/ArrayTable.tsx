@@ -1,10 +1,11 @@
-import { memo, useState } from 'react'
+import { memo } from 'react'
 import type { JsonArray } from '../../types'
 import { childPath, toCopyPath } from '../../lib/jsonPath'
 import { isRevealed } from '../../lib/search'
 import { ROW_CAP } from '../../config'
 import { useCopy } from '../../hooks/useCopy'
 import { useColumnResize } from '../../hooks/useColumnResize'
+import { useShowMore } from '../../hooks/useShowMore'
 import { useGrid } from './gridContext'
 import { JsonNode } from './JsonNode'
 import { NodeHeader } from './NodeHeader'
@@ -25,15 +26,13 @@ export const ArrayTable = memo(function ArrayTable({ value, path, depth }: Props
   const { search } = useGrid()
   const copy = useCopy()
   const { widths, totalWidth, beginResize } = useColumnResize(ARR_COLUMNS)
-  const [cap, setCap] = useState(ROW_CAP)
   const filtering = search.hasQuery
 
   const rows = value
     .map((item, index) => ({ item, index, rowPath: childPath(path, index) }))
     .filter((row) => !filtering || isRevealed(search, row.rowPath))
 
-  const visible = rows.slice(0, cap)
-  const remaining = rows.length - visible.length
+  const { visible, remaining, showMore } = useShowMore(rows)
 
   return (
     <div className="node" data-depth={Math.min(depth, 4)}>
@@ -76,11 +75,7 @@ export const ArrayTable = memo(function ArrayTable({ value, path, depth }: Props
         </tbody>
       </table>
       {remaining > 0 && (
-        <button
-          type="button"
-          className="show-more"
-          onClick={() => setCap((c) => c + ROW_CAP)}
-        >
+        <button type="button" className="show-more" onClick={showMore}>
           Mostrar mais {Math.min(ROW_CAP, remaining)} de {remaining} itens
         </button>
       )}

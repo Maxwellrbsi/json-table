@@ -1,6 +1,7 @@
-import { useEffect, useState, type MouseEvent } from 'react'
+import { useCallback, useState, type MouseEvent } from 'react'
 import type { FilterOption } from '../../lib/columnFilter'
 import { keyLabel } from '../../lib/columnFilter'
+import { useDismissOnOutside } from '../../hooks/useDismissOnOutside'
 
 interface Props {
   column: string
@@ -26,23 +27,8 @@ export function ColumnFilter({ column, options, selected, onChange }: Props) {
   const [query, setQuery] = useState('')
   const active = selected.size > 0
 
-  useEffect(() => {
-    if (open === null) return
-    const close = () => setOpen(null)
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setOpen(null)
-    }
-    window.addEventListener('mousedown', close)
-    window.addEventListener('keydown', onKey)
-    window.addEventListener('resize', close)
-    window.addEventListener('scroll', close, true)
-    return () => {
-      window.removeEventListener('mousedown', close)
-      window.removeEventListener('keydown', onKey)
-      window.removeEventListener('resize', close)
-      window.removeEventListener('scroll', close, true)
-    }
-  }, [open])
+  const close = useCallback(() => setOpen(null), [])
+  useDismissOnOutside(open !== null, close)
 
   const openPop = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()

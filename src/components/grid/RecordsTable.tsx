@@ -16,6 +16,7 @@ import { columnOptions, valueKey, type FilterOption } from '../../lib/columnFilt
 import { ROW_CAP } from '../../config'
 import { useCopy } from '../../hooks/useCopy'
 import { useColumnResize } from '../../hooks/useColumnResize'
+import { useShowMore } from '../../hooks/useShowMore'
 import { useGrid } from './gridContext'
 import { JsonNode } from './JsonNode'
 import { NodeHeader } from './NodeHeader'
@@ -51,7 +52,6 @@ export const RecordsTable = memo(function RecordsTable({ value, path, depth }: P
   const { search, editValue } = useGrid()
   const copy = useCopy()
   const tableRef = useRef<HTMLTableElement>(null)
-  const [cap, setCap] = useState(ROW_CAP)
   const [filters, setFilters] = useState<Record<string, Set<string>>>({})
   const [hiddenCols, setHiddenCols] = useState<Set<string>>(() => new Set())
   const [hiddenRows, setHiddenRows] = useState<Set<number>>(() => new Set())
@@ -139,8 +139,7 @@ export const RecordsTable = memo(function RecordsTable({ value, path, depth }: P
       activeFilterCols.every((col) => filters[col].has(valueKey(row.obj[col]))),
     )
 
-  const visible = rows.slice(0, cap)
-  const remaining = rows.length - visible.length
+  const { visible, remaining, showMore } = useShowMore(rows)
   const note = trimmed ? `${rows.length} de ${value.length}` : undefined
 
   const setColumnFilter = useCallback((col: string, next: Set<string>) => {
@@ -436,11 +435,7 @@ export const RecordsTable = memo(function RecordsTable({ value, path, depth }: P
         </table>
       </div>
       {remaining > 0 && (
-        <button
-          type="button"
-          className="show-more"
-          onClick={() => setCap((c) => c + ROW_CAP)}
-        >
+        <button type="button" className="show-more" onClick={showMore}>
           Mostrar mais {Math.min(ROW_CAP, remaining)} de {remaining} linhas
         </button>
       )}

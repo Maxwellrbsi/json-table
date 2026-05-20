@@ -1,8 +1,9 @@
-import { memo, useEffect, useState } from 'react'
+import { memo, useCallback, useState } from 'react'
 import type { JsonValue } from '../../types'
 import { primitiveType } from '../../lib/classifyNode'
 import { toCopyPath } from '../../lib/jsonPath'
 import { useCopy } from '../../hooks/useCopy'
+import { useDismissOnOutside } from '../../hooks/useDismissOnOutside'
 import { useGrid } from './gridContext'
 import { Highlight } from '../Highlight'
 
@@ -30,23 +31,8 @@ export const PrimitiveCell = memo(function PrimitiveCell({ value, path }: Props)
   const text = asText(value)
   const isEmptyString = type === 'string' && text === ''
 
-  useEffect(() => {
-    if (menu === null) return
-    const close = () => setMenu(null)
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setMenu(null)
-    }
-    window.addEventListener('mousedown', close)
-    window.addEventListener('keydown', onKey)
-    window.addEventListener('resize', close)
-    window.addEventListener('scroll', close, true)
-    return () => {
-      window.removeEventListener('mousedown', close)
-      window.removeEventListener('keydown', onKey)
-      window.removeEventListener('resize', close)
-      window.removeEventListener('scroll', close, true)
-    }
-  }, [menu])
+  const closeMenu = useCallback(() => setMenu(null), [])
+  useDismissOnOutside(menu !== null, closeMenu)
 
   return (
     <>
