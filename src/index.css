@@ -84,6 +84,10 @@ button {
   background: var(--accent-soft);
 }
 
+::placeholder {
+  color: var(--text-faint);
+}
+
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 1px;
@@ -186,10 +190,6 @@ button {
   outline: none;
 }
 
-.home-textarea::placeholder {
-  color: var(--text-faint);
-}
-
 .home-box-footer {
   display: flex;
   align-items: center;
@@ -223,10 +223,6 @@ button {
 }
 .btn-primary:hover:not(:disabled) {
   background: var(--accent-hover);
-}
-.btn-primary:disabled {
-  opacity: 0.38;
-  cursor: not-allowed;
 }
 
 .home-hint {
@@ -393,10 +389,6 @@ button {
   padding: 14px;
   tab-size: 2;
 }
-.editor-textarea::placeholder {
-  color: var(--text-faint);
-}
-
 .error-banner {
   display: flex;
   align-items: flex-start;
@@ -481,9 +473,6 @@ button {
   color: var(--text);
   font-size: 13px;
 }
-.search-input::placeholder {
-  color: var(--text-faint);
-}
 .search-count {
   flex-shrink: 0;
   font-size: 11px;
@@ -528,7 +517,8 @@ button {
   color: var(--text);
   border-color: var(--border-strong);
 }
-.btn:disabled {
+.btn:disabled,
+.btn-primary:disabled {
   opacity: 0.38;
   cursor: not-allowed;
 }
@@ -815,32 +805,10 @@ button.chip:hover {
   font-weight: 700;
 }
 
-/* Click-to-copy menu */
+/* Click-to-copy menu. Shares popup chrome and item style with .action-menu;
+   only the min-width differs. */
 .cell-menu {
-  position: fixed;
-  z-index: 1000;
   min-width: 158px;
-  padding: 4px;
-  display: flex;
-  flex-direction: column;
-  background: var(--surface-2);
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius-sm);
-  box-shadow: var(--shadow);
-  animation: fade-in 0.1s ease both;
-}
-.cell-menu-item {
-  padding: 7px 10px;
-  background: transparent;
-  border: 0;
-  border-radius: var(--radius-xs);
-  color: var(--text);
-  font-size: 12.5px;
-  text-align: left;
-}
-.cell-menu-item:hover {
-  background: var(--accent-soft);
-  color: var(--accent-hover);
 }
 
 /* ============================================================
@@ -951,21 +919,7 @@ body.resizing-col {
   font-weight: 700;
 }
 
-/* Filter dropdown. */
-.col-filter-pop {
-  position: fixed;
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-  width: 256px;
-  max-height: 360px;
-  background: var(--surface-2);
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius-sm);
-  box-shadow: var(--shadow);
-  font-family: var(--font-ui);
-  animation: fade-in 0.1s ease both;
-}
+/* Filter dropdown — shares chrome with .cell-menu / .action-menu. */
 .col-filter-search {
   padding: 7px;
   border-bottom: 1px solid var(--border);
@@ -983,9 +937,6 @@ body.resizing-col {
 }
 .col-filter-search input:focus {
   border-color: var(--accent);
-}
-.col-filter-search input::placeholder {
-  color: var(--text-faint);
 }
 
 .col-filter-applied {
@@ -1125,14 +1076,16 @@ body.resizing-col {
   background: var(--surface-hover);
 }
 
-/* Dropdown shared by the column and row menus. */
-.action-menu {
+/* Floating popups share the same chrome (positioning, surface, border,
+   shadow, fade-in). Only sizing differs and lives next to the variant rule. */
+.cell-menu,
+.action-menu,
+.col-filter-pop {
   position: fixed;
   z-index: 1000;
-  min-width: 188px;
-  padding: 4px;
   display: flex;
   flex-direction: column;
+  padding: 4px;
   background: var(--surface-2);
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-sm);
@@ -1140,6 +1093,14 @@ body.resizing-col {
   font-family: var(--font-ui);
   animation: fade-in 0.1s ease both;
 }
+.col-filter-pop {
+  width: 256px;
+  max-height: 360px;
+  padding: 0;
+}
+
+/* Items inside cell-menu / action-menu share the same look. */
+.cell-menu-item,
 .action-menu-item {
   padding: 7px 10px;
   background: transparent;
@@ -1149,9 +1110,15 @@ body.resizing-col {
   font-size: 12.5px;
   text-align: left;
 }
+.cell-menu-item:hover,
 .action-menu-item:hover {
   background: var(--accent-soft);
   color: var(--accent-hover);
+}
+
+/* Dropdown shared by the column and row menus. */
+.action-menu {
+  min-width: 188px;
 }
 .action-menu-item.is-danger {
   color: var(--danger);
