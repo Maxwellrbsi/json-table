@@ -19,7 +19,7 @@ import { useColumnResize } from '../../hooks/useColumnResize'
 import { useShowMore } from '../../hooks/useShowMore'
 import { useGrid } from './gridContext'
 import { JsonNode } from './JsonNode'
-import { NodeHeader } from './NodeHeader'
+import { TableShell } from './TableShell'
 import { ColumnFilter } from './ColumnFilter'
 import { ActionMenu } from './ActionMenu'
 import { MenuPopup, type MenuItem } from './MenuPopup'
@@ -306,147 +306,140 @@ export const RecordsTable = memo(function RecordsTable({ value, path, depth }: P
     }.`
   }
 
-  return (
-    <div className="node" data-depth={Math.min(depth, 4)}>
-      <NodeHeader variant="records" count={value.length} path={path} note={note} />
-      {hasHidden && (
-        <ActionMenu
-          triggerClassName="hidden-bar"
-          ariaLabel="Reexibir itens ocultos"
-          items={hiddenItems}
+  const hiddenBar = hasHidden ? (
+    <ActionMenu
+      triggerClassName="hidden-bar"
+      ariaLabel="Reexibir itens ocultos"
+      items={hiddenItems}
+    >
+      <span className="hidden-bar-icon" aria-hidden="true">
+        ⊘
+      </span>
+      {hiddenSummary} · reexibir
+    </ActionMenu>
+  ) : undefined
+
+  const thead = (
+    <thead>
+      <tr>
+        <th
+          className={`index-col${effectiveFrozen > 0 ? ' frozen-col' : ''}`}
+          style={effectiveFrozen > 0 ? { left: frozenLefts[0] ?? 0 } : undefined}
         >
-          <span className="hidden-bar-icon" aria-hidden="true">
-            ⊘
-          </span>
-          {hiddenSummary} · reexibir
-        </ActionMenu>
-      )}
-      <div className="table-scroll">
-        <table
-          ref={tableRef}
-          className={`grid-table records-table${widths ? ' is-resized' : ''}`}
-          style={{ width: totalWidth }}
-        >
-          <colgroup>
-            <col style={{ width: widths?.get(INDEX_KEY) }} />
-            {visibleColumns.map((col) => (
-              <col key={col} style={{ width: widths?.get(dataKey(col)) }} />
-            ))}
-          </colgroup>
-          <thead>
-            <tr>
-              <th
-                className={`index-col${effectiveFrozen > 0 ? ' frozen-col' : ''}`}
-                style={effectiveFrozen > 0 ? { left: frozenLefts[0] ?? 0 } : undefined}
-              >
-                #
-                <span
-                  className="col-resizer"
-                  onMouseDown={(e) => beginResize(e, INDEX_KEY)}
-                  onClick={(e) => e.stopPropagation()}
+          #
+          <span
+            className="col-resizer"
+            onMouseDown={(e) => beginResize(e, INDEX_KEY)}
+            onClick={(e) => e.stopPropagation()}
+          />
+        </th>
+        {visibleColumns.map((col, vi) => {
+          const frozen = vi < effectiveFrozen
+          return (
+            <th
+              key={col}
+              className={
+                'column-head' +
+                (frozen ? ' frozen-col' : '') +
+                (frozen && vi === effectiveFrozen - 1 ? ' frozen-col-edge' : '') +
+                (highlightCol === col ? ' is-selected-col' : '')
+              }
+              style={frozen ? { left: frozenLefts[vi + 1] ?? 0 } : undefined}
+              onClick={(e) => selectColumn(e, col)}
+              title="Selecionar coluna"
+            >
+              <div className="col-head-inner">
+                <span className="col-head-text">
+                  <Highlight text={col} query={search.query} />
+                </span>
+                <ColumnFilter
+                  column={col}
+                  options={optionsByColumn[col]}
+                  selected={filters[col] ?? EMPTY_SET}
+                  onChange={(next) => setColumnFilter(col, next)}
                 />
-              </th>
-              {visibleColumns.map((col, vi) => {
-                const frozen = vi < effectiveFrozen
-                return (
-                  <th
-                    key={col}
-                    className={
-                      'column-head' +
-                      (frozen ? ' frozen-col' : '') +
-                      (frozen && vi === effectiveFrozen - 1 ? ' frozen-col-edge' : '') +
-                      (highlightCol === col ? ' is-selected-col' : '')
-                    }
-                    style={frozen ? { left: frozenLefts[vi + 1] ?? 0 } : undefined}
-                    onClick={(e) => selectColumn(e, col)}
-                    title="Selecionar coluna"
-                  >
-                    <div className="col-head-inner">
-                      <span className="col-head-text">
-                        <Highlight text={col} query={search.query} />
-                      </span>
-                      <ColumnFilter
-                        column={col}
-                        options={optionsByColumn[col]}
-                        selected={filters[col] ?? EMPTY_SET}
-                        onChange={(next) => setColumnFilter(col, next)}
-                      />
-                    </div>
-                    <span
-                      className="col-resizer"
-                      onMouseDown={(e) => beginResize(e, dataKey(col))}
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                  </th>
-                )
-              })}
-            </tr>
-          </thead>
-          <tbody>
-            {visible.map(({ obj, index, rowPath }) => (
-              <tr
-                key={rowPath}
-                className={highlightRow === index ? 'is-selected-row' : undefined}
-              >
-                <th
-                  className={`index-cell${effectiveFrozen > 0 ? ' frozen-col' : ''}`}
-                  style={
-                    effectiveFrozen > 0 ? { left: frozenLefts[0] ?? 0 } : undefined
+              </div>
+              <span
+                className="col-resizer"
+                onMouseDown={(e) => beginResize(e, dataKey(col))}
+                onClick={(e) => e.stopPropagation()}
+              />
+            </th>
+          )
+        })}
+      </tr>
+    </thead>
+  )
+
+  return (
+    <>
+      <TableShell
+        variant="records"
+        count={value.length}
+        path={path}
+        depth={depth}
+        note={note}
+        hiddenBar={hiddenBar}
+        colIds={columnIds}
+        widths={widths}
+        totalWidth={totalWidth}
+        tableRef={tableRef}
+        thead={thead}
+        showEmpty={trimmed && rows.length === 0}
+        footer={
+          remaining > 0 && (
+            <button type="button" className="show-more" onClick={showMore}>
+              Mostrar mais {Math.min(ROW_CAP, remaining)} de {remaining} linhas
+            </button>
+          )
+        }
+      >
+        {visible.map(({ obj, index, rowPath }) => (
+          <tr
+            key={rowPath}
+            className={highlightRow === index ? 'is-selected-row' : undefined}
+          >
+            <th
+              className={`index-cell${effectiveFrozen > 0 ? ' frozen-col' : ''}`}
+              style={
+                effectiveFrozen > 0 ? { left: frozenLefts[0] ?? 0 } : undefined
+              }
+              onClick={(e) => selectRow(e, index)}
+              title="Selecionar linha"
+            >
+              {index}
+            </th>
+            {visibleColumns.map((col, vi) => {
+              const present = Object.prototype.hasOwnProperty.call(obj, col)
+              const frozen = vi < effectiveFrozen
+              return (
+                <td
+                  key={col}
+                  className={
+                    'value-cell' +
+                    (frozen ? ' frozen-col' : '') +
+                    (frozen && vi === effectiveFrozen - 1 ? ' frozen-col-edge' : '') +
+                    (highlightCol === col ? ' is-selected-col' : '')
                   }
-                  onClick={(e) => selectRow(e, index)}
-                  title="Selecionar linha"
+                  style={frozen ? { left: frozenLefts[vi + 1] ?? 0 } : undefined}
                 >
-                  {index}
-                </th>
-                {visibleColumns.map((col, vi) => {
-                  const present = Object.prototype.hasOwnProperty.call(obj, col)
-                  const frozen = vi < effectiveFrozen
-                  return (
-                    <td
-                      key={col}
-                      className={
-                        'value-cell' +
-                        (frozen ? ' frozen-col' : '') +
-                        (frozen && vi === effectiveFrozen - 1
-                          ? ' frozen-col-edge'
-                          : '') +
-                        (highlightCol === col ? ' is-selected-col' : '')
-                      }
-                      style={
-                        frozen ? { left: frozenLefts[vi + 1] ?? 0 } : undefined
-                      }
-                    >
-                      {present ? (
-                        <JsonNode
-                          value={obj[col]}
-                          path={childPath(rowPath, col)}
-                          depth={depth + 1}
-                        />
-                      ) : (
-                        <span className="cell-missing" title="chave ausente">
-                          —
-                        </span>
-                      )}
-                    </td>
-                  )
-                })}
-              </tr>
-            ))}
-            {trimmed && rows.length === 0 && (
-              <tr>
-                <td className="no-rows" colSpan={visibleColumns.length + 1}>
-                  sem correspondências
+                  {present ? (
+                    <JsonNode
+                      value={obj[col]}
+                      path={childPath(rowPath, col)}
+                      depth={depth + 1}
+                    />
+                  ) : (
+                    <span className="cell-missing" title="chave ausente">
+                      —
+                    </span>
+                  )}
                 </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-      {remaining > 0 && (
-        <button type="button" className="show-more" onClick={showMore}>
-          Mostrar mais {Math.min(ROW_CAP, remaining)} de {remaining} linhas
-        </button>
-      )}
+              )
+            })}
+          </tr>
+        ))}
+      </TableShell>
       {selection !== null && confirm === null && (
         <MenuPopup
           items={menuItems}
@@ -480,6 +473,6 @@ export const RecordsTable = memo(function RecordsTable({ value, path, depth }: P
           }}
         />
       )}
-    </div>
+    </>
   )
 })

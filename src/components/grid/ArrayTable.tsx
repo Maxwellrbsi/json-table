@@ -8,7 +8,7 @@ import { useColumnResize } from '../../hooks/useColumnResize'
 import { useShowMore } from '../../hooks/useShowMore'
 import { useGrid } from './gridContext'
 import { JsonNode } from './JsonNode'
-import { NodeHeader } from './NodeHeader'
+import { TableShell } from './TableShell'
 
 interface Props {
   value: JsonArray
@@ -39,50 +39,42 @@ export const ArrayTable = memo(function ArrayTable({ value, path, depth }: Props
   const { visible, remaining, showMore } = useShowMore(rows)
 
   return (
-    <div className="node" data-depth={Math.min(depth, 4)}>
-      <NodeHeader variant="array" count={value.length} path={path} />
-      <table
-        className={`grid-table array-table${widths ? ' is-resized' : ''}`}
-        style={{ width: totalWidth }}
-      >
-        <colgroup>
-          <col style={{ width: widths?.get(INDEX_COL) }} />
-          <col style={{ width: widths?.get(VALUE_COL) }} />
-        </colgroup>
-        <tbody>
-          {visible.map(({ item, index, rowPath }) => (
-            <tr key={rowPath}>
-              <th
-                className="index-cell"
-                onClick={() => copy(toCopyPath(rowPath), 'Caminho copiado')}
-                title="Copiar caminho"
-              >
-                {index}
-                <span
-                  className="col-resizer"
-                  onMouseDown={(e) => beginResize(e, INDEX_COL)}
-                  onClick={(e) => e.stopPropagation()}
-                />
-              </th>
-              <td className="value-cell">
-                <JsonNode value={item} path={rowPath} depth={depth + 1} />
-              </td>
-            </tr>
-          ))}
-          {filtering && rows.length === 0 && (
-            <tr>
-              <td className="no-rows" colSpan={2}>
-                sem correspondências
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-      {remaining > 0 && (
-        <button type="button" className="show-more" onClick={showMore}>
-          Mostrar mais {Math.min(ROW_CAP, remaining)} de {remaining} itens
-        </button>
-      )}
-    </div>
+    <TableShell
+      variant="array"
+      count={value.length}
+      path={path}
+      depth={depth}
+      colIds={ARR_COLUMNS}
+      widths={widths}
+      totalWidth={totalWidth}
+      showEmpty={filtering && rows.length === 0}
+      footer={
+        remaining > 0 && (
+          <button type="button" className="show-more" onClick={showMore}>
+            Mostrar mais {Math.min(ROW_CAP, remaining)} de {remaining} itens
+          </button>
+        )
+      }
+    >
+      {visible.map(({ item, index, rowPath }) => (
+        <tr key={rowPath}>
+          <th
+            className="index-cell"
+            onClick={() => copy(toCopyPath(rowPath), 'Caminho copiado')}
+            title="Copiar caminho"
+          >
+            {index}
+            <span
+              className="col-resizer"
+              onMouseDown={(e) => beginResize(e, INDEX_COL)}
+              onClick={(e) => e.stopPropagation()}
+            />
+          </th>
+          <td className="value-cell">
+            <JsonNode value={item} path={rowPath} depth={depth + 1} />
+          </td>
+        </tr>
+      ))}
+    </TableShell>
   )
 })

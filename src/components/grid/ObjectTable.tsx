@@ -6,7 +6,7 @@ import { useCopy } from '../../hooks/useCopy'
 import { useColumnResize } from '../../hooks/useColumnResize'
 import { useGrid } from './gridContext'
 import { JsonNode } from './JsonNode'
-import { NodeHeader } from './NodeHeader'
+import { TableShell } from './TableShell'
 import { Highlight } from '../Highlight'
 
 interface Props {
@@ -37,50 +37,40 @@ export const ObjectTable = memo(function ObjectTable({ value, path, depth }: Pro
   )
 
   return (
-    <div className="node" data-depth={Math.min(depth, 4)}>
-      <NodeHeader variant="object" count={entries.length} path={path} />
-      <table
-        className={`grid-table object-table${widths ? ' is-resized' : ''}`}
-        style={{ width: totalWidth }}
-      >
-        <colgroup>
-          <col style={{ width: widths?.get(KEY_COL) }} />
-          <col style={{ width: widths?.get(VALUE_COL) }} />
-        </colgroup>
-        <tbody>
-          {rows.map(([key, child]) => {
-            const cellPath = childPath(path, key)
-            return (
-              <tr key={cellPath}>
-                <th
-                  className="key-cell"
-                  onClick={() => copy(toCopyPath(cellPath), 'Caminho copiado')}
-                  title="Copiar caminho"
-                >
-                  <span className="cell-key-text">
-                    <Highlight text={key} query={search.query} />
-                  </span>
-                  <span
-                    className="col-resizer"
-                    onMouseDown={(e) => beginResize(e, KEY_COL)}
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                </th>
-                <td className="value-cell">
-                  <JsonNode value={child} path={cellPath} depth={depth + 1} />
-                </td>
-              </tr>
-            )
-          })}
-          {filtering && rows.length === 0 && (
-            <tr>
-              <td className="no-rows" colSpan={2}>
-                sem correspondências
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
+    <TableShell
+      variant="object"
+      count={entries.length}
+      path={path}
+      depth={depth}
+      colIds={OBJ_COLUMNS}
+      widths={widths}
+      totalWidth={totalWidth}
+      showEmpty={filtering && rows.length === 0}
+    >
+      {rows.map(([key, child]) => {
+        const cellPath = childPath(path, key)
+        return (
+          <tr key={cellPath}>
+            <th
+              className="key-cell"
+              onClick={() => copy(toCopyPath(cellPath), 'Caminho copiado')}
+              title="Copiar caminho"
+            >
+              <span className="cell-key-text">
+                <Highlight text={key} query={search.query} />
+              </span>
+              <span
+                className="col-resizer"
+                onMouseDown={(e) => beginResize(e, KEY_COL)}
+                onClick={(e) => e.stopPropagation()}
+              />
+            </th>
+            <td className="value-cell">
+              <JsonNode value={child} path={cellPath} depth={depth + 1} />
+            </td>
+          </tr>
+        )
+      })}
+    </TableShell>
   )
 })
