@@ -92,7 +92,11 @@ export const RecordsTable = memo(function RecordsTable({ value, path, depth }: P
       lefts.push(acc)
       acc += headRow.cells[i].getBoundingClientRect().width
     }
-    setFrozenLefts(lefts)
+    setFrozenLefts((prev) =>
+      prev.length === lefts.length && prev.every((v, i) => v === lefts[i])
+        ? prev
+        : lefts,
+    )
   }, [effectiveFrozen])
 
   useLayoutEffect(() => {
@@ -131,13 +135,17 @@ export const RecordsTable = memo(function RecordsTable({ value, path, depth }: P
   const trimmed = isFiltered || hiddenRows.size > 0
   const hasHidden = hiddenCols.size > 0 || hiddenRows.size > 0
 
-  const rows = value
-    .map((obj, index) => ({ obj, index, rowPath: childPath(path, index) }))
-    .filter((row) => !hiddenRows.has(row.index))
-    .filter((row) => !filtering || isRevealed(search, row.rowPath))
-    .filter((row) =>
-      activeFilterCols.every((col) => filters[col].has(valueKey(row.obj[col]))),
-    )
+  const rows = useMemo(
+    () =>
+      value
+        .map((obj, index) => ({ obj, index, rowPath: childPath(path, index) }))
+        .filter((row) => !hiddenRows.has(row.index))
+        .filter((row) => !filtering || isRevealed(search, row.rowPath))
+        .filter((row) =>
+          activeFilterCols.every((col) => filters[col].has(valueKey(row.obj[col]))),
+        ),
+    [value, path, hiddenRows, filtering, search, activeFilterCols, filters],
+  )
 
   const { visible, remaining, showMore } = useShowMore(rows)
   const note = trimmed ? `${rows.length} de ${value.length}` : undefined

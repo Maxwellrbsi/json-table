@@ -1,4 +1,4 @@
-import { memo } from 'react'
+import { memo, useMemo } from 'react'
 import type { JsonArray } from '../../types'
 import { childPath, toCopyPath } from '../../lib/jsonPath'
 import { isRevealed } from '../../lib/search'
@@ -28,9 +28,13 @@ export const ArrayTable = memo(function ArrayTable({ value, path, depth }: Props
   const { widths, totalWidth, beginResize } = useColumnResize(ARR_COLUMNS)
   const filtering = search.hasQuery
 
-  const rows = value
-    .map((item, index) => ({ item, index, rowPath: childPath(path, index) }))
-    .filter((row) => !filtering || isRevealed(search, row.rowPath))
+  const rows = useMemo(
+    () =>
+      value
+        .map((item, index) => ({ item, index, rowPath: childPath(path, index) }))
+        .filter((row) => !filtering || isRevealed(search, row.rowPath)),
+    [value, path, filtering, search],
+  )
 
   const { visible, remaining, showMore } = useShowMore(rows)
 

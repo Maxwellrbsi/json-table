@@ -1,4 +1,4 @@
-import { memo } from 'react'
+import { memo, useMemo } from 'react'
 import type { JsonObject } from '../../types'
 import { childPath, toCopyPath } from '../../lib/jsonPath'
 import { isRevealed } from '../../lib/search'
@@ -25,12 +25,16 @@ export const ObjectTable = memo(function ObjectTable({ value, path, depth }: Pro
   const { search } = useGrid()
   const copy = useCopy()
   const { widths, totalWidth, beginResize } = useColumnResize(OBJ_COLUMNS)
-  const entries = Object.entries(value)
+  const entries = useMemo(() => Object.entries(value), [value])
   const filtering = search.hasQuery
 
-  const rows = filtering
-    ? entries.filter(([key]) => isRevealed(search, childPath(path, key)))
-    : entries
+  const rows = useMemo(
+    () =>
+      filtering
+        ? entries.filter(([key]) => isRevealed(search, childPath(path, key)))
+        : entries,
+    [filtering, entries, search, path],
+  )
 
   return (
     <div className="node" data-depth={Math.min(depth, 4)}>
