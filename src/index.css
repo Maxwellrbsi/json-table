@@ -1,0 +1,1328 @@
+/* ============================================================
+   JSON Table — dark, minimalist theme
+   ============================================================ */
+
+:root {
+  color-scheme: dark;
+
+  /* Surfaces */
+  --bg: #0d0d0f;
+  --surface-1: #161618;
+  --surface-2: #1e1e22;
+  --surface-3: #26262c;
+  --surface-hover: #2f2f37;
+
+  /* Borders */
+  --border: #2a2a31;
+  --border-strong: #3c3c46;
+
+  /* Text */
+  --text: #e9e9ec;
+  --text-dim: #9a9aa6;
+  --text-faint: #5f5f6b;
+
+  /* Accent */
+  --accent: #5e9eff;
+  --accent-hover: #82b3ff;
+  --accent-soft: rgba(94, 158, 255, 0.14);
+  --selected-bg: #283044;
+
+  /* JSON value types */
+  --c-string: #9ece6a;
+  --c-number: #7dcfff;
+  --c-boolean: #bb9af7;
+  --c-null: #6b7089;
+  --c-key: #ccd3e3;
+
+  /* Search highlight */
+  --hl-bg: #f4c95d;
+  --hl-fg: #1a1a1a;
+
+  --danger: #f7768e;
+
+  --radius: 9px;
+  --radius-sm: 6px;
+  --radius-xs: 4px;
+
+  --font-ui: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif;
+  --font-mono: 'Cascadia Code', 'JetBrains Mono', 'SF Mono', Consolas, 'Liberation Mono',
+    monospace;
+
+  --shadow: 0 14px 36px rgba(0, 0, 0, 0.5);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+::selection {
+  background: var(--accent-soft);
+}
+
+::placeholder {
+  color: var(--text-faint);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--surface-3);
+  border-radius: 7px;
+  border: 3px solid var(--bg);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-strong);
+}
+
+/* ============================================================
+   Home view
+   ============================================================ */
+
+.home {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+}
+
+.home-inner {
+  width: 100%;
+  max-width: 660px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: fade-up 0.4s ease both;
+}
+
+.home-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.home-mark {
+  color: var(--accent);
+  font-size: 27px;
+  line-height: 1;
+}
+
+.home-title {
+  margin: 0;
+  font-size: 31px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+.home-subtitle {
+  margin: 14px 0 30px;
+  color: var(--text-dim);
+  font-size: 15px;
+}
+
+.home-box {
+  width: 100%;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.home-box:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.home-box.validity-invalid:focus-within {
+  border-color: var(--danger);
+  box-shadow: 0 0 0 3px rgba(247, 118, 142, 0.13);
+}
+
+.home-textarea {
+  width: 100%;
+  min-height: 184px;
+  max-height: 50vh;
+  resize: vertical;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+  line-height: 1.6;
+  padding: 16px 18px;
+  outline: none;
+}
+
+.home-box-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px 12px;
+}
+
+.home-validity {
+  font-size: 12.5px;
+  font-weight: 500;
+}
+.home-validity.validity-valid {
+  color: var(--c-string);
+}
+.home-validity.validity-invalid {
+  color: var(--danger);
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #0a0a0c;
+  border: 0;
+  font-weight: 600;
+  font-size: 13.5px;
+  padding: 9px 22px;
+  border-radius: var(--radius-sm);
+  transition:
+    background 0.15s ease,
+    opacity 0.15s ease;
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.home-hint {
+  margin-top: 20px;
+  color: var(--text-faint);
+  font-size: 12px;
+}
+.home-hint kbd {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  padding: 1px 5px;
+}
+
+/* ============================================================
+   App shell
+   ============================================================ */
+
+.app {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  min-height: 52px;
+  flex-shrink: 0;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-1);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  background: transparent;
+  border: 0;
+  color: var(--text);
+  font-weight: 600;
+  font-size: 14px;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+}
+.brand:hover {
+  background: var(--surface-3);
+}
+.brand-mark {
+  color: var(--accent);
+  font-size: 16px;
+}
+
+.workspace {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
+/* ============================================================
+   JSON editor panel (the collapsible "JSON bar")
+   ============================================================ */
+
+.editor-pane {
+  width: 40%;
+  min-width: 280px;
+  max-width: 620px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-1);
+  border-right: 1px solid var(--border);
+}
+
+.editor-rail {
+  width: 42px;
+  min-width: 42px;
+  max-width: 42px;
+  padding: 0;
+}
+
+.rail-toggle {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding-top: 16px;
+  background: transparent;
+  border: 0;
+  color: var(--text-dim);
+}
+.rail-toggle:hover {
+  background: var(--surface-3);
+  color: var(--text);
+}
+.rail-chevron {
+  font-size: 16px;
+}
+.rail-label {
+  writing-mode: vertical-rl;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.editor-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 38px;
+  flex-shrink: 0;
+  padding: 0 8px 0 14px;
+  border-bottom: 1px solid var(--border);
+}
+.editor-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.editor-meta {
+  margin-left: auto;
+  font-size: 11.5px;
+  color: var(--text-faint);
+}
+.editor-collapse {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  color: var(--text-dim);
+  font-size: 14px;
+}
+.editor-collapse:hover {
+  background: var(--surface-3);
+  color: var(--text);
+}
+
+.editor-textarea {
+  flex: 1;
+  resize: none;
+  border: 0;
+  outline: none;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.6;
+  padding: 14px;
+  tab-size: 2;
+}
+.error-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  flex-shrink: 0;
+  padding: 10px 14px;
+  background: rgba(247, 118, 142, 0.1);
+  border-top: 1px solid rgba(247, 118, 142, 0.32);
+  color: #ffb3c0;
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+.error-mark {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  margin-top: 1px;
+  border-radius: 50%;
+  background: var(--danger);
+  color: #1a1a1a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 11px;
+}
+.error-text {
+  font-family: var(--font-mono);
+  word-break: break-word;
+}
+
+/* ============================================================
+   Toolbar
+   ============================================================ */
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.toolbar-group {
+  display: flex;
+  gap: 6px;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 168px;
+  height: 32px;
+  padding: 0 8px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  transition:
+    border-color 0.13s ease,
+    box-shadow 0.13s ease;
+}
+.search-box.is-active {
+  border-color: var(--border-strong);
+}
+.search-box:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.search-icon {
+  color: var(--text-faint);
+  font-size: 16px;
+}
+.search-input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: 0;
+  outline: none;
+  color: var(--text);
+  font-size: 13px;
+}
+.search-count {
+  flex-shrink: 0;
+  font-size: 11px;
+  color: var(--text-dim);
+  background: var(--surface-3);
+  border-radius: 10px;
+  padding: 1px 7px;
+}
+.search-count.is-none {
+  color: var(--text-faint);
+}
+.search-clear {
+  flex-shrink: 0;
+  background: transparent;
+  border: 0;
+  color: var(--text-faint);
+  font-size: 11px;
+  padding: 3px 4px;
+  border-radius: var(--radius-xs);
+}
+.search-clear:hover {
+  color: var(--text);
+  background: var(--surface-3);
+}
+
+.btn {
+  height: 32px;
+  padding: 0 11px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-dim);
+  font-size: 12.5px;
+  white-space: nowrap;
+  transition:
+    background 0.12s ease,
+    color 0.12s ease,
+    border-color 0.12s ease;
+}
+.btn:hover:not(:disabled) {
+  background: var(--surface-hover);
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+.btn:disabled,
+.btn-primary:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+.btn-accent {
+  color: var(--accent);
+  border-color: rgba(94, 158, 255, 0.32);
+}
+.btn-accent:hover:not(:disabled) {
+  color: var(--accent-hover);
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+
+/* ============================================================
+   Grid area
+   ============================================================ */
+
+.grid-area {
+  flex: 1;
+  min-width: 0;
+  overflow: auto;
+  /* Horizontal padding is moved into .grid-root so that sticky frozen columns
+     can stick flush against the scroller's left edge — otherwise the padding
+     leaves a gap where non-frozen cell content bleeds past the frozen ones. */
+  padding: 18px 0;
+  animation: fade-in 0.3s ease both;
+}
+
+.grid-root {
+  display: inline-block;
+  min-width: 100%;
+  padding: 0 18px;
+}
+
+.empty-state {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  color: var(--text-faint);
+}
+.empty-glyph {
+  font-family: var(--font-mono);
+  font-size: 42px;
+  color: var(--border-strong);
+}
+.empty-text {
+  margin: 0;
+  font-size: 13.5px;
+}
+
+/* ============================================================
+   Recursive grid: nodes & tables
+   ============================================================ */
+
+.node {
+  display: inline-block;
+  vertical-align: top;
+  max-width: 100%;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+}
+
+/* A nested node fills its host cell and drops its own outer border. */
+.value-cell > .node {
+  display: block;
+  border: 0;
+}
+
+.node-header {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 3px 8px;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+}
+.node-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  color: var(--text-dim);
+  font-size: 10px;
+}
+.node-toggle:hover {
+  color: var(--text);
+}
+.node-glyph {
+  color: var(--accent);
+  font-family: var(--font-mono);
+}
+.node-count {
+  color: var(--text-dim);
+}
+.node-note {
+  padding-left: 7px;
+  border-left: 1px solid var(--border-strong);
+  color: var(--text-faint);
+}
+.node-copy {
+  margin-left: auto;
+  padding: 1px 6px;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-xs);
+  color: var(--text-faint);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+.node:hover > .node-header > .node-copy {
+  opacity: 1;
+}
+.node-copy:hover {
+  color: var(--accent);
+  background: var(--surface-3);
+}
+
+.grid-table {
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+}
+.grid-table th,
+.grid-table td {
+  border: 1px solid var(--border);
+  text-align: left;
+  vertical-align: top;
+}
+.grid-table tbody tr:hover > .key-cell,
+.grid-table tbody tr:hover > .index-cell {
+  color: var(--accent);
+}
+
+.key-cell {
+  position: relative;
+  padding: 4px 10px;
+  background: var(--surface-2);
+  color: var(--c-key);
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.value-cell {
+  padding: 0;
+}
+
+.records-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding: 5px 10px;
+  background: var(--surface-2);
+  color: var(--c-key);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.records-table .index-col {
+  color: var(--text-faint);
+  font-weight: 500;
+}
+.column-head {
+  cursor: default;
+}
+
+.index-cell {
+  position: relative;
+  padding: 4px 9px;
+  background: var(--surface-2);
+  color: var(--text-faint);
+  font-size: 11.5px;
+  text-align: right;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.cell-primitive {
+  display: block;
+  max-width: 540px;
+  padding: 4px 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.cell-primitive:hover {
+  background: var(--surface-3);
+}
+.cell-empty-string {
+  color: var(--text-faint);
+  font-style: italic;
+}
+.cell-missing {
+  display: block;
+  padding: 4px 10px;
+  color: var(--text-faint);
+}
+
+.type-string {
+  color: var(--c-string);
+}
+.type-number {
+  color: var(--c-number);
+}
+.type-boolean {
+  color: var(--c-boolean);
+}
+.type-null {
+  color: var(--c-null);
+  font-style: italic;
+}
+
+.hl {
+  background: var(--hl-bg);
+  color: var(--hl-fg);
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+.no-rows {
+  padding: 10px 14px;
+  color: var(--text-faint);
+  font-family: var(--font-ui);
+  font-size: 12.5px;
+  font-style: italic;
+}
+
+.show-more {
+  display: block;
+  width: 100%;
+  padding: 7px;
+  background: var(--surface-2);
+  border: 0;
+  border-top: 1px solid var(--border);
+  color: var(--accent);
+  font-family: var(--font-ui);
+  font-size: 12px;
+}
+.show-more:hover {
+  background: var(--surface-3);
+  color: var(--accent-hover);
+}
+
+/* Collapsed / empty container chip */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 3px;
+  padding: 3px 9px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+}
+button.chip {
+  transition:
+    border-color 0.12s ease,
+    background 0.12s ease,
+    color 0.12s ease;
+}
+button.chip:hover {
+  background: var(--surface-3);
+  border-color: var(--accent);
+  color: var(--text);
+}
+.chip-static {
+  color: var(--text-faint);
+}
+.chip-plus {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* Click-to-copy menu. Shares popup chrome and item style with .action-menu;
+   only the min-width differs. */
+.cell-menu {
+  min-width: 158px;
+}
+
+/* ============================================================
+   Column resize & filter
+   ============================================================ */
+
+/* Drag handle on the right edge of a resizable column. */
+.col-resizer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 8px;
+  height: 100%;
+  z-index: 3;
+  cursor: col-resize;
+  user-select: none;
+}
+.col-resizer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 2px;
+  height: 100%;
+  background: var(--accent);
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+.col-resizer:hover::after {
+  opacity: 1;
+}
+body.resizing-col {
+  cursor: col-resize;
+  user-select: none;
+}
+
+/* Once a column is resized, pin the layout so widths are honored exactly. */
+.grid-table.is-resized {
+  table-layout: fixed;
+}
+.grid-table.is-resized th,
+.grid-table.is-resized td {
+  overflow: hidden;
+}
+/* Resized cells wrap their text, so row height grows/shrinks to fit. */
+.grid-table.is-resized .cell-primitive {
+  max-width: none;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-overflow: clip;
+}
+
+/* Header row: column name + filter button share a line. */
+.col-head-inner {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.col-head-text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cell-key-text {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Per-column filter button + badge. */
+.col-filter-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  height: 17px;
+  padding: 0 3px;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-xs);
+  color: var(--text-faint);
+  transition:
+    color 0.12s ease,
+    background 0.12s ease;
+}
+.col-filter-btn:hover {
+  color: var(--text);
+  background: var(--surface-3);
+}
+.col-filter-btn.is-active {
+  color: var(--accent);
+}
+.col-filter-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 13px;
+  height: 13px;
+  padding: 0 3px;
+  background: var(--accent);
+  border-radius: 7px;
+  color: var(--bg);
+  font-family: var(--font-ui);
+  font-size: 9px;
+  font-weight: 700;
+}
+
+/* Filter dropdown — shares chrome with .cell-menu / .action-menu. */
+.col-filter-search {
+  padding: 7px;
+  border-bottom: 1px solid var(--border);
+}
+.col-filter-search input {
+  width: 100%;
+  height: 28px;
+  padding: 0 8px;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  color: var(--text);
+  font-size: 12.5px;
+  outline: none;
+}
+.col-filter-search input:focus {
+  border-color: var(--accent);
+}
+
+.col-filter-applied {
+  padding: 7px;
+  border-bottom: 1px solid var(--border);
+}
+.col-filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  max-height: 78px;
+  overflow-y: auto;
+}
+.col-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  max-width: 100%;
+  padding: 2px 3px 2px 7px;
+  background: var(--accent-soft);
+  border: 1px solid rgba(94, 158, 255, 0.32);
+  border-radius: var(--radius-xs);
+  color: var(--accent-hover);
+  font-size: 11px;
+}
+.col-filter-chip-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+}
+.col-filter-chip-x {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  padding: 1px 3px;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-xs);
+  color: var(--accent-hover);
+  font-size: 9px;
+}
+.col-filter-chip-x:hover {
+  background: rgba(94, 158, 255, 0.22);
+  color: var(--text);
+}
+
+.col-filter-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 5px;
+}
+.col-filter-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px;
+  border-radius: var(--radius-xs);
+  color: var(--text);
+  font-size: 12.5px;
+  cursor: pointer;
+}
+.col-filter-item:hover {
+  background: var(--surface-3);
+}
+.col-filter-item input {
+  flex-shrink: 0;
+  width: 13px;
+  height: 13px;
+  margin: 0;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+.col-filter-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+}
+.col-filter-count {
+  flex-shrink: 0;
+  color: var(--text-faint);
+  font-size: 11px;
+}
+.col-filter-empty {
+  padding: 14px 10px;
+  color: var(--text-faint);
+  font-size: 12px;
+  font-style: italic;
+  text-align: center;
+}
+
+.col-filter-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px;
+  border-top: 1px solid var(--border);
+}
+.col-filter-link {
+  padding: 3px 5px;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-xs);
+  color: var(--text-dim);
+  font-size: 11.5px;
+}
+.col-filter-link:hover {
+  color: var(--text);
+  background: var(--surface-3);
+}
+.col-filter-apply {
+  margin-left: auto;
+  padding: 5px 14px;
+  background: var(--accent);
+  border: 0;
+  border-radius: var(--radius-xs);
+  color: var(--bg);
+  font-size: 12px;
+  font-weight: 600;
+}
+.col-filter-apply:hover {
+  background: var(--accent-hover);
+}
+
+/* ============================================================
+   Column / row actions: menu, hidden bar, frozen columns
+   ============================================================ */
+
+/* Clicking a column header (or a row number) selects it, Excel-like. */
+.column-head {
+  cursor: pointer;
+}
+.records-table .column-head:hover {
+  background: var(--surface-hover);
+}
+
+/* Floating popups share the same chrome (positioning, surface, border,
+   shadow, fade-in). Only sizing differs and lives next to the variant rule. */
+.cell-menu,
+.action-menu,
+.col-filter-pop {
+  position: fixed;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  padding: 4px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  font-family: var(--font-ui);
+  animation: fade-in 0.1s ease both;
+}
+.col-filter-pop {
+  width: 256px;
+  max-height: 360px;
+  padding: 0;
+}
+
+/* Items inside cell-menu / action-menu share the same look. */
+.cell-menu-item,
+.action-menu-item {
+  padding: 7px 10px;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-xs);
+  color: var(--text);
+  font-size: 12.5px;
+  text-align: left;
+}
+.cell-menu-item:hover,
+.action-menu-item:hover {
+  background: var(--accent-soft);
+  color: var(--accent-hover);
+}
+
+/* Dropdown shared by the column and row menus. */
+.action-menu {
+  min-width: 188px;
+}
+.action-menu-item.is-danger {
+  color: var(--danger);
+}
+.action-menu-item.is-danger:hover {
+  background: rgba(247, 118, 142, 0.13);
+  color: var(--danger);
+}
+
+/* Strip listing hidden columns/rows; opens a menu to bring them back. */
+.hidden-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 4px 10px;
+  background: var(--surface-2);
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-dim);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  text-align: left;
+}
+.hidden-bar:hover {
+  background: var(--surface-3);
+  color: var(--text);
+}
+.hidden-bar-icon {
+  color: var(--text-faint);
+  font-size: 12px;
+}
+
+/* Frozen columns stay pinned to the left while scrolling horizontally.
+   Cells need opaque backgrounds so scrolling columns slide cleanly behind them. */
+.records-table .frozen-col {
+  position: sticky;
+  z-index: 1;
+  background: var(--surface-1);
+}
+.records-table thead .frozen-col,
+.records-table .index-col.frozen-col,
+.records-table .index-cell.frozen-col {
+  background: var(--surface-2);
+}
+.records-table thead .frozen-col {
+  z-index: 4;
+}
+/* Edge of the frozen area: accent-colored divider plus a soft shadow so the
+   boundary between frozen and scrolling columns is unmistakable. The divider
+   is drawn as a ::after pseudo (not border-right) so border-collapse doesn't
+   hand it off to the scrolling neighbor and so a sibling cell can't paint
+   over it. Overflow stays visible so the shadow isn't clipped — the inner
+   .cell-primitive still handles ellipsis. */
+.records-table .frozen-col-edge {
+  overflow: visible;
+  box-shadow: 6px 0 10px -4px rgba(0, 0, 0, 0.55);
+}
+.grid-table.is-resized .frozen-col-edge {
+  overflow: visible;
+}
+.records-table .frozen-col-edge::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: -2px;
+  bottom: 0;
+  width: 2px;
+  background: var(--accent);
+  pointer-events: none;
+  z-index: 6;
+}
+.records-table thead .frozen-col-edge {
+  z-index: 5;
+}
+
+/* Selected column / row highlight (shown while the action menu is open). */
+.records-table th.is-selected-col,
+.records-table td.is-selected-col,
+.records-table tr.is-selected-row > th,
+.records-table tr.is-selected-row > td {
+  background: var(--selected-bg);
+}
+
+/* ============================================================
+   Confirm dialog
+   ============================================================ */
+
+.confirm-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.55);
+  animation: fade-in 0.12s ease both;
+}
+.confirm-dialog {
+  width: 340px;
+  max-width: calc(100vw - 32px);
+  padding: 18px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.confirm-message {
+  margin: 0;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+}
+.confirm-detail {
+  margin: 8px 0 0;
+  color: var(--text-dim);
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+.confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+.confirm-delete {
+  height: 32px;
+  padding: 0 14px;
+  background: var(--danger);
+  border: 1px solid var(--danger);
+  border-radius: var(--radius-sm);
+  color: #1a1416;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.confirm-delete:hover {
+  filter: brightness(1.1);
+}
+
+/* ============================================================
+   Toasts
+   ============================================================ */
+
+.toast-stack {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+}
+.toast {
+  padding: 9px 17px;
+  background: var(--surface-3);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  color: var(--text);
+  font-size: 13px;
+  animation: toast-in 0.2s ease both;
+}
+
+/* ============================================================
+   Animations
+   ============================================================ */
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
